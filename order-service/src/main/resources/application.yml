@@ -1,0 +1,26 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: order-service
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    prefer-ip-address: true
+    hostname: localhost
+
+notification:
+  service:
+    url: http://localhost:8082  # для RestTemplate (если используете)
+
+logging:
+  level:
+    com.orderservice: DEBUG
+    com.netflix.discovery: INFO
+    com.netflix.eureka: INFO

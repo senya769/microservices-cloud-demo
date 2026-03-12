@@ -1,0 +1,19 @@
+server:
+  port: 8080
+
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: order-service-route
+          uri: lb://order-service
+          predicates:
+            - Path=/order-service/**
+          filters:
+            - StripPrefix=1
+        - id: notification-service-route
+          uri: lb://notification-service
+          predicates:
+            - Path=/notification-service/**
+          filters:
+            - StripPrefix=1

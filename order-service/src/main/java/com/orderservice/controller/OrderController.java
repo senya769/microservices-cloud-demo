@@ -6,7 +6,6 @@ import com.orderservice.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -22,7 +21,7 @@ public class OrderController {
     }
 
     @GetMapping
-    public Map<Long,Order> getOrders() {
+    public Map<Long, Order> getOrders() {
         return orderService.getAllOrders();
     }
 }

@@ -8,7 +8,8 @@ spring:
     config:
       server:
         git:
-          uri: file://C:/Usik-A/projects-test/microservices/microservices-cloud-demo/config-repo
+          uri: file:///C:/Usik-A/projects-test/microservices/microservices-cloud-demo/config-repo
+          default-label: master
 eureka:
   client:
     service-url:

@@ -5,35 +5,36 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
-
-import java.util.HashMap;
-import java.util.Map;
+import org.springframework.web.reactive.function.client.WebClient;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class NotificationRestClient implements NotificationClient {
 
-    private final RestTemplate restTemplate;
-
-    @Value("${notification.service.url:http://localhost:8082}")
-    private String notificationServiceUrl;
+    private final WebClient.Builder webClientBuilder;
 
     @Override
     public void sendNotification(Order order) {
-        String url = notificationServiceUrl + "/api/notifications";
+        WebClient webClient = webClientBuilder
+                .baseUrl("http://notification-service")  // имя, под которым сервис зарегистрирован в Eureka
+                .build();
 
-        // Используем HashMap вместо Map.of для избежания проблем с неизменяемостью
-        Map<String, Object> request = new HashMap<>();
-        request.put("orderId", order.getId());
-        request.put("message", "Создан новый заказ: " + order.getDescription());
+        NotificationRequest request = new NotificationRequest(
+                order.getId(),
+                "Создан новый заказ: " + order.getDescription()
+        );
 
-        try {
-            restTemplate.postForEntity(url, request, Void.class);
-            log.info("✅ Уведомление отправлено в Notification Service для заказа ID: {}", order.getId());
-        } catch (Exception e) {
-            log.error("❌ Ошибка при отправке уведомления: {}", e.getMessage());
-        }
+        webClient.post()
+                .uri("/api/notifications")   // относительный путь
+                .bodyValue(request)
+                .retrieve()
+                .toBodilessEntity()
+                .block();  // пока оставим .block(), чтобы было синхронно
+
+        log.info("Уведомление отправлено");
+    }
+
+    private record NotificationRequest(Long orderId, String message) {
     }
 }
